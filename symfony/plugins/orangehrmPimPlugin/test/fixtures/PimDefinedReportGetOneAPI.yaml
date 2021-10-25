@@ -45,6 +45,10 @@ Subunit:
   - { id: 4, name: 'Agriculture', unitId: 'ag', lft: 8, rgt: 9, level: 1 }
   - { id: 5, name: 'Support', unitId: 'sup', lft: 3, rgt: 4, level: 2 }
 
+Country:
+  - { countryCode: US, name: 'UNITED STATES', countryName: 'United States', iso3: USA, numCode: 840 }
+  - { countryCode: LK, name: 'SRI LANKA', countryName: 'Sri Lanka', iso3: LKA, numCode: 144 }
+
 Location:
   - { id: 1, name: 'Head', country_code: 'US' }
   - { id: 2, name: 'Development', country_code: 'US' }
