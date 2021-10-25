@@ -32,7 +32,7 @@ Skill:
 
 Employee:
   - { "emp_number": 1,"employee_id": "0001","emp_lastname": "Adalwin","emp_firstname": "Odis","emp_middle_name": "", job_title_code: 4 }
-  - { "emp_number": 2,"employee_id": "0002","emp_lastname": "Anderson","emp_firstname": "Linda","emp_middle_name": "Jane", job_title_code: 1, birthday: '1990-10-02', nation_code: 52, gender: 2, maritalStatus: 'Married', otherId: 'E0002', drivingLicenseNo: '123321', drivingLicenseExpiredDate: '2021-10-29' }
+  - { "emp_number": 2,"employee_id": "0002","emp_lastname": "Anderson","emp_firstname": "Linda","emp_middle_name": "Jane", job_title_code: 1, birthday: '1990-10-02', gender: 2, maritalStatus: 'Married', otherId: 'E0002', drivingLicenseNo: '123321', drivingLicenseExpiredDate: '2021-10-29' }
   - { "emp_number": 3,"employee_id": "0003","emp_lastname": "Duval","emp_firstname": "Alice","emp_middle_name": "", street1: '263a', street2: 'Centroallee', city: 'Oberhausen', country: 'DE', zipcode: '46047', homeTelephone: '112-382-0478', workTelephone: '112-454-0457', workEmail: 'odis1@osohrm.com' }
   - { "emp_number": 4,"employee_id": "0004","emp_lastname": "Abbey","emp_firstname": "Kayla","emp_middle_name": "", maritalStatus: 'Other', otherEmail: 'kayla@mail.com', province: 'Western', country: 'LK', eeo_cat_code: 2, joinedDate: '2019-02-01' }
   - { "emp_number": 5,"employee_id": "0005","emp_lastname": "Abel","emp_firstname": "Ashley","emp_middle_name": "", emp_status: 2, eeo_cat_code: 1, joinedDate: '2015-10-18' }
