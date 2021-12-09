@@ -17,28 +17,21 @@
  * Boston, MA  02110-1301, USA
  */
 
-namespace OrangeHRM\Time\Controller;
+namespace OrangeHRM\Time\Traits\Service;
 
-use OrangeHRM\Core\Controller\AbstractVueController;
-use OrangeHRM\Core\Vue\Component;
-use OrangeHRM\Core\Vue\Prop;
-use OrangeHRM\Framework\Http\Request;
+use OrangeHRM\Core\Traits\ServiceContainerTrait;
+use OrangeHRM\Framework\Services;
+use OrangeHRM\Time\Service\TimesheetService;
 
-class EmployeeTimesheetController extends AbstractVueController
+trait TimesheetServiceTrait
 {
+    use ServiceContainerTrait;
+
     /**
-     * @inheritDoc
+     * @return TimesheetService
      */
-    public function preRender(Request $request): void
+    public function getTimesheetService(): TimesheetService
     {
-        $id = $request->get('id'); // this id is emp number
-        if ($id) {
-            $component = new Component('view-employee-timesheet');
-            $component->addProp(new Prop('employee-id', Prop::TYPE_NUMBER, $id));
-        } else {
-            $component = new Component('employee-timesheet');
-        }
-        
-        $this->setComponent($component);
+        return $this->getContainer()->get(Services::TIMESHEET_SERVICE);
     }
 }
