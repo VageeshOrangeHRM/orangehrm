@@ -23,6 +23,7 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use OrangeHRM\Attendance\Api\Model\AttendanceRecordModel;
+use OrangeHRM\Attendance\Dto\AttendanceRecordSearchFilterParams;
 use OrangeHRM\Attendance\Exception\AttendanceServiceException;
 use OrangeHRM\Attendance\Traits\Service\AttendanceServiceTrait;
 use OrangeHRM\Core\Api\CommonParams;
@@ -61,7 +62,36 @@ class EmployeeAttendanceRecordAPI extends Endpoint implements CrudEndpoint
      */
     public function getAll(): EndpointResult
     {
-        throw $this->getNotImplementedException();
+        $attendanceRecordSearchFilterParams = new AttendanceRecordSearchFilterParams();
+        $employeeNumber = $this->getRequestParams()->getIntOrNull(
+            RequestParams::PARAM_TYPE_QUERY,
+            CommonParams::PARAMETER_EMP_NUMBER,
+        );
+
+        $date = $this->getRequestParams()->getString(
+            RequestParams::PARAM_TYPE_QUERY,
+            self::PARAMETER_DATE,
+        );
+
+        if (!is_null($employeeNumber)) {
+            $attendanceRecordSearchFilterParams->setEmployeeNumbers([$employeeNumber]);
+        } else {
+            $accessibleEmpNumbers = $this->getUserRoleManager()->getAccessibleEntityIds(Employee::class);
+            $attendanceRecordSearchFilterParams->setEmployeeNumbers($accessibleEmpNumbers);
+        }
+
+        $from = $date . ' ' . '00:00:00';
+        $to = $date . ' ' . '23:59:59';
+        $attendanceRecordSearchFilterParams->setFromDate(new DateTime($from));
+        $attendanceRecordSearchFilterParams->setToDate(new DateTime($to));
+        $this->setSortingAndPaginationParams($attendanceRecordSearchFilterParams);
+
+        $attendanceRecords = $this->getAttendanceService()
+            ->getAttendanceDao()
+            ->getAttendanceRecordList($attendanceRecordSearchFilterParams);
+        dump($attendanceRecords);
+        die();
+
     }
 
     /**
@@ -69,7 +99,29 @@ class EmployeeAttendanceRecordAPI extends Endpoint implements CrudEndpoint
      */
     public function getValidationRuleForGetAll(): ParamRuleCollection
     {
-        throw $this->getNotImplementedException();
+        return new ParamRuleCollection(
+            $this->getEmpNumberParamRule(),
+            $this->getValidationDecorator()->requiredParamRule(
+                new ParamRule(
+                    self::PARAMETER_DATE,
+                    new Rule(Rules::API_DATE)
+                ),
+            ),
+            ...$this->getSortingAndPaginationParamsRules(AttendanceRecordSearchFilterParams::ALLOWED_SORT_FIELDS)
+        );
+    }
+
+    /**
+     * @return ParamRule
+     */
+    private function getEmpNumberParamRule(): ParamRule
+    {
+        return $this->getValidationDecorator()->notRequiredParamRule(
+            new ParamRule(
+                CommonParams::PARAMETER_EMP_NUMBER,
+                new Rule(Rules::IN_ACCESSIBLE_EMP_NUMBERS)
+            )
+        );
     }
 
     /**
