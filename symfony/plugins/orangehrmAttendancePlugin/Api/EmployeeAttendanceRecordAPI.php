@@ -63,6 +63,7 @@ class EmployeeAttendanceRecordAPI extends Endpoint implements CrudEndpoint
     public function getAll(): EndpointResult
     {
         $attendanceRecordSearchFilterParams = new AttendanceRecordSearchFilterParams();
+        $this->setSortingAndPaginationParams($attendanceRecordSearchFilterParams);
         $employeeNumber = $this->getRequestParams()->getIntOrNull(
             RequestParams::PARAM_TYPE_QUERY,
             CommonParams::PARAMETER_EMP_NUMBER,
@@ -84,7 +85,7 @@ class EmployeeAttendanceRecordAPI extends Endpoint implements CrudEndpoint
         $to = $date . ' ' . '23:59:59';
         $attendanceRecordSearchFilterParams->setFromDate(new DateTime($from));
         $attendanceRecordSearchFilterParams->setToDate(new DateTime($to));
-        $this->setSortingAndPaginationParams($attendanceRecordSearchFilterParams);
+
 
         $attendanceRecords = $this->getAttendanceService()
             ->getAttendanceDao()

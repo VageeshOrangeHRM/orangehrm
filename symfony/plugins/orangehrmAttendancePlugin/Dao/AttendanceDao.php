@@ -637,6 +637,7 @@ class AttendanceDao extends BaseDao {
         AttendanceReportSearchFilterParams $attendanceReportSearchFilterParams
     ): array {
         $paginator = $this->getAttendanceReportPaginator($attendanceReportSearchFilterParams);
+        dump($paginator->getQuery()->getSQL());
         return $paginator->getQuery()->execute();
     }
 
@@ -720,7 +721,6 @@ class AttendanceDao extends BaseDao {
      */
     public function getAttendanceRecordList(AttendanceRecordSearchFilterParams $attendanceRecordSearchFilterParams): array {
         $paginator = $this->getAttendanceRecordListPaginator($attendanceRecordSearchFilterParams);
-        dump($paginator->getQuery()->getSQL());
         return $paginator->getQuery()->execute();
     }
 
@@ -730,11 +730,12 @@ class AttendanceDao extends BaseDao {
      */
     private function getAttendanceRecordListPaginator(AttendanceRecordSearchFilterParams $attendanceRecordSearchFilterParams):Paginator
     {
-
         $q = $this->createQueryBuilder(Employee::class, 'employee');
         $q->select(
             'CONCAT(employee.firstName, \' \', employee.lastName) AS fullName',
             'attendanceRecord.id',
+            'attendanceRecord.punchInUserTime AS punchInTime',
+            'attendanceRecord.punchOutUserTime AS punchOutTime',
             'IDENTITY(employee.employeeTerminationRecord) AS terminationId',
             'employee.empNumber as empNumber',
             "SUM(TIME_DIFF(COALESCE(attendanceRecord.punchOutUtcTime, 0), COALESCE(attendanceRecord.punchInUtcTime, 0),'second')) AS total"
@@ -747,13 +748,13 @@ class AttendanceDao extends BaseDao {
                 ->setParameter('empNumbers', $attendanceRecordSearchFilterParams->getEmployeeNumbers());
         }
 
-//        if (!is_null($attendanceRecordSearchFilterParams->getDate())) {
+//        if (!is_null($attendanceRecordSearchFilterParams->getFromDate())) {
 //            $q->andWhere($q->expr()->orX(
 //                $q->expr()->isNull('attendanceRecord.id'),
 //                $q->expr()->between('attendanceRecord.punchInUserTime', ':fromDate', ':toDate')
 //            ))
-//                ->setParameter('fromDate', new DateTime($from))
-//                ->setParameter('toDate', new DateTime($to));
+//                ->setParameter('fromDate', $attendanceRecordSearchFilterParams->getFromDate())
+//                ->setParameter('toDate', $attendanceRecordSearchFilterParams->getToDate());
 //        }
 
         if (!is_null($attendanceRecordSearchFilterParams->getFromDate())) {
@@ -767,13 +768,14 @@ class AttendanceDao extends BaseDao {
         if (!is_null($attendanceRecordSearchFilterParams->getToDate())) {
             $q->andWhere($q->expr()->orX(
                 $q->expr()->isNull('attendanceRecord.id'),
-                $q->expr()->isNull('attendanceRecord.punchOutUserTime'),
-                $q->expr()->lte('attendanceRecord.punchOutUserTime', ':toDate')
+//                $q->expr()->isNull('attendanceRecord.punchOutUserTime'),
+                $q->expr()->lte('attendanceRecord.punchInUserTime', ':toDate')
             ))
                 ->setParameter('toDate', $attendanceRecordSearchFilterParams->getToDate());
         }
 
         $q->groupBy('attendanceRecord.id');
+        $q->addGroupBy('employee.empNumber');
         $q->addOrderBy('employee.lastName');
         return $this->getPaginator($q);
     }
